@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hasil BMI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to bottom right, #f8bbd0, #bbdefb);
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 480px;
+      margin: 30px auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+    .bmi-box {
+      text-align: center;
+      padding: 20px;
+      border-radius: 20px;
+      background-color: #fce4ec;
+      margin-bottom: 20px;
+    }
+    .bmi-box h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #666;
+    }
+    .bmi-box .status {
+      color: #ec407a;
+      font-size: 24px;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+    .bmi-box .value {
+      font-weight: bold;
+      color: #000;
+    }
+    .bar {
+      height: 15px;
+      background: linear-gradient(to right, #64b5f6 0% 18.5%, #81c784 18.5% 23%, #fff176 23% 25%, #ffb74d 25% 30%, #e57373 30% 100%);
+      border-radius: 10px;
+      margin: 16px 0;
+      position: relative;
+    }
+    .indicator {
+      position: absolute;
+      top: -10px;
+      width: 40px;
+      text-align: center;
+      left: calc(var(--bmi) * 1% - 20px);
+      font-size: 14px;
+      font-weight: bold;
+      color: #000;
+    }
+    .note {
+      font-size: 14px;
+      color: #444;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .cek-ulang {
+      color: #ec407a;
+      text-align: right;
+      cursor: pointer;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+    .info-box {
+      background-color: #e3f2fd;
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+    .penyakit-box {
+      background-color: #fce4ec;
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 15px;
+    }
+    .penyakit-box ul {
+      padding-left: 20px;
+      margin-top: 10px;
+      text-align: left;
+    }
+    .highlight {
+      color: #d81b60;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="bmi-box">
+      <h3 id="bmiGenderText">BMI untuk </h3>
+      <div class="status" id="kategoriOutput">-</div>
+      <p><span class="value" id="tinggiOutput"></span> cm &nbsp;|&nbsp; <span class="value" id="beratOutput"></span> kg</p>
+      <div class="bar">
+        <div class="indicator" id="bmiOutput">0.0</div>
+      </div>
+      <div class="note">Utamakan hidup sehat dan perhatikan konsumsi harian</div>
+      <div class="cek-ulang" onclick="cekUlang()">Cek Ulang</div>
+    </div>
+
+    <div class="info-box" id="infoOutput"></div>
+
+    <div class="penyakit-box">
+      <strong>Beberapa penyakit yang berasal dari kegemukan:</strong>
+      <ul>
+        <li>Diabetes</li>
+        <li>Hipertensi</li>
+        <li>Sakit Jantung</li>
+        <li>Osteoarthritis</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const tinggi = localStorage.getItem("tinggi");
+    const berat = localStorage.getItem("berat");
+    const gender = localStorage.getItem("gender");
+
+    const tinggiM = tinggi / 100;
+    const bmi = (berat / (tinggiM * tinggiM)).toFixed(1);
+    const bmiFloat = parseFloat(bmi);
+
+    let kategori = "";
+    let info = "";
+
+    if (bmiFloat < 18.5) {
+      kategori = "Berat Badan Kurang";
+      info = "BMI kamu: <strong>" + bmi + ", Berat Badan Kurang</strong><br>Perhatikan asupan nutrisi dan jaga pola makan teratur.";
+    } else if (bmiFloat < 23) {
+      kategori = "Normal";
+      info = "BMI kamu: <strong>" + bmi + ", Normal</strong><br>Pertahankan gaya hidup sehat dan aktivitas fisik rutin.";
+    } else if (bmiFloat < 25) {
+      kategori = "Berat Badan Lebih";
+      info = "BMI kamu: <strong>" + bmi + ", Berat Badan Lebih</strong><br>Dalam 60% kasus, <span class='highlight'>pola makan yang buruk</span> dapat <span class='highlight'>berisiko</span> Diabetes.";
+    } else if (bmiFloat < 30) {
+      kategori = "Obesitas Kelas I";
+      info = "BMI kamu: <strong>" + bmi + ", Obesitas Kelas I</strong><br>Segera perbaiki gaya hidup dan mulai bergerak aktif.";
+    } else {
+      kategori = "Obesitas Kelas II";
+      info = "BMI kamu: <strong>" + bmi + ", Obesitas Kelas II</strong><br>Risiko penyakit meningkat, segera konsultasikan dengan profesional.";
+    }
+
+    document.getElementById("tinggiOutput").innerText = tinggi;
+    document.getElementById("beratOutput").innerText = berat;
+    document.getElementById("bmiOutput").innerText = bmi;
+    document.getElementById("kategoriOutput").innerText = kategori;
+    document.getElementById("infoOutput").innerHTML = info;
+    document.getElementById("bmiGenderText").innerText = `BMI untuk ${gender}`;
+
+    // Geser indikator BMI ke posisi sesuai nilai
+    document.getElementById("bmiOutput").style.setProperty('--bmi', Math.min(bmiFloat, 40));
+    
+    function cekUlang() {
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
